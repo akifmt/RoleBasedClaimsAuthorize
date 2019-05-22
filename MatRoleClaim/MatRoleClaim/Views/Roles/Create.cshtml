@@ -1,0 +1,18 @@
+﻿@model MatRoleClaim.Models.ApplicationRole
+@{
+    ViewBag.Title = "Add New Role";
+}
+<h2>Add New User Role:</h2>
+
+@using (Html.BeginForm())
+{
+    <p> Enter User Role Name:</p>
+
+    @Html.EditorFor(m => m.Name)
+
+    <p> Enter User Role Description:</p>
+
+    @Html.EditorFor(m => m.Description)
+
+    <input type="submit" value="Create Role" />
+}
