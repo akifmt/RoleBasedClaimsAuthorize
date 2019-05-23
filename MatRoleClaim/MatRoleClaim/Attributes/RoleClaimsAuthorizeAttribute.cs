@@ -26,8 +26,8 @@ namespace MatRoleClaim.Attributes
         {
             this.claimType = claimType;
             this.claimValue = claimValue;
-            userManager = new ApplicationUserManager(new UserStore<ApplicationUser>(new ApplicationDbContext()));
-            roleManager = new ApplicationRoleManager(new RoleStore<ApplicationRole>(new ApplicationDbContext()));
+            userManager = new ApplicationUserManager(new ApplicationUserStore(new ApplicationDbContext()));
+            roleManager = new ApplicationRoleManager(new ApplicationRoleStore(new ApplicationDbContext()));
         }
 
         public override void OnAuthorization(AuthorizationContext filterContext)
@@ -36,9 +36,18 @@ namespace MatRoleClaim.Attributes
             if (user == null)
                 base.HandleUnauthorizedRequest(filterContext); // user not log in
 
-            string userId = filterContext.HttpContext.User.Identity.GetUserId();
-            List<string> userRoles = userManager.GetRoles(userId).ToList();
+            string userId = user.Identity.GetUserId();
 
+            List<string> userRoles = new List<string>();
+            try
+            {
+                userRoles = userManager.GetRoles(userId).ToList();
+            }
+            catch (Exception)
+            {
+                base.HandleUnauthorizedRequest(filterContext); // wrong user id
+            }
+            
             foreach (var userrole in userRoles)
             {
                 IdentityResult result = roleManager.HasClaim(userrole, claimType, claimValue);
