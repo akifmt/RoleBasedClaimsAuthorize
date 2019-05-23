@@ -1,0 +1,61 @@
+﻿@model IEnumerable<MatRoleClaim.Models.RoleClaimsViewModels>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Roles and Claims</h2>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.RoleId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RoleName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RoleDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Claims)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td style="font-size:10px">
+                    @Html.DisplayFor(modelItem => item.RoleId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoleName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoleDescription)
+                </td>
+                <td style="font-size:10px">
+                    @foreach (var claim in item.Claims)
+                    {
+                        if (claim.Status)
+                        {
+                            <b style="color:green">@string.Format("{0}/{1} ({2})", claim.ClaimType, claim.ClaimValue, claim.Status)</b> <br />
+                        }
+                        else
+                        {
+                            <b style="color:red">@string.Format("{0}/{1} ({2})", claim.ClaimType, claim.ClaimValue, claim.Status)</b> <br />
+                        }
+                    }
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.RoleId }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.RoleId })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

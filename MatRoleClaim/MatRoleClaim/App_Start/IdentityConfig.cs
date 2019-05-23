@@ -8,6 +8,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using MatRoleClaim.Models;
+using System.Collections.Generic;
 
 namespace MatRoleClaim
 {
@@ -181,6 +182,34 @@ namespace MatRoleClaim
                 }
 
                 return IdentityResult.Failed("Other error on HasClaim. ExceptionMessage:");
+            }
+        }
+
+        /// <summary>
+        /// Get Role Claims
+        /// </summary>
+        /// <param name="roleName">Role Name</param>
+        /// <returns></returns>
+        public IEnumerable<string> GetClaims(string roleName)
+        {
+            using (ApplicationDbContext dbContext = ApplicationDbContext.Create())
+            {
+                try
+                {
+                    ApplicationRole role = dbContext.Roles.Where(x => x.Name == roleName).FirstOrDefault();
+                    if (role == null)
+                        return new string[0];
+                    else
+                    {
+                        ApplicationClaim[] roleClaims = dbContext.RoleClaims.Where(x => x.Role.Name == role.Name).Select(x => x.Claim).ToArray();
+                        IEnumerable<string> formattedClaims = roleClaims.Select(x => string.Format("{0}/{1}", x.ClaimType, x.ClaimValue));
+                        return formattedClaims;
+                    }
+                }
+                catch
+                {
+                    return new string[0];
+                }
             }
         }
 
