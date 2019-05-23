@@ -12,127 +12,40 @@ using System.Collections.Generic;
 namespace MatRoleClaim.Controllers
 {
     [Authorize]
-    public class RolesController : Controller
+    public class RolesController : BaseController
     {
-        private ApplicationSignInManager _signInManager;
-        private ApplicationUserManager _userManager;
-        private ApplicationDbContext _applicationDbContext;
-
         public RolesController()
         {
         }
 
-        public RolesController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
+        public RolesController(ApplicationUserManager userManager, ApplicationRoleManager roleManager, ApplicationSignInManager signInManager)
         {
-            UserManager = userManager;
-            SignInManager = signInManager;
-        }
-
-        public ApplicationSignInManager SignInManager {
-            get {
-                return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-            }
-            private set {
-                _signInManager = value;
-            }
-        }
-
-        public ApplicationUserManager UserManager {
-            get {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-            private set {
-                _userManager = value;
-            }
-        }
-
-        public ApplicationDbContext DbContext {
-            get {
-                return _applicationDbContext ?? Request.GetOwinContext().Get<ApplicationDbContext>();
-            }
-            private set {
-                _applicationDbContext = value;
-            }
+            base.UserManager = userManager;
+            base.RoleManager = roleManager;
+            base.SignInManager = signInManager;
         }
 
         [RoleClaimsAuthorize("Roles", "Show")]
         public ActionResult Index()
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                if (!isAdminUser())
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            List<ApplicationRole> Roles = DbContext.Roles.ToList();
+            List<ApplicationRole> Roles = base.DbContext.Roles.ToList();
             return View(Roles);
         }
 
         [RoleClaimsAuthorize("Roles", "Add")]
         public ActionResult Create()
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                if (!isAdminUser())
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            var Role = new IdentityRole();
+            var Role = new ApplicationRole();
             return View(Role);
         }
 
         [HttpPost]
         public ActionResult Create(ApplicationRole Role)
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                if (!isAdminUser())
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            DbContext.Roles.Add(Role);
-            DbContext.SaveChanges();
+            base.DbContext.Roles.Add(Role);
+            base.DbContext.SaveChanges();
             return RedirectToAction("Index");
         }
 
-        public Boolean isAdminUser()
-        {
-            if (User.Identity.IsAuthenticated)
-            {
-                var user = User.Identity;
-                ApplicationDbContext context = new ApplicationDbContext();
-                var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
-                var s = UserManager.GetRoles(user.GetUserId());
-                if (s[0].ToString() == "Admin")
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            return false;
-        }
-
     }
-
 }

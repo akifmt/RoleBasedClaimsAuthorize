@@ -1,18 +1,115 @@
 ﻿
 @{
     ViewBag.Title = "Index";
+
+    Dictionary<string, bool> currentUserClaims = ViewBag.CurrentUserClaims;
 }
 
-<h2>Index Admin</h2>
+<div class="container">
+    <div class="row" style="margin:15px">
+        <div class="col text-center">
+            Admin Page Details
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3">
+            <ul class="nav flex-column nav-pills">
+                <li class="nav-item">
+                    Admin Menu
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active disabled" href="#">Roles</a>
+                </li>
 
-@if (ViewBag.displayMenu == "Yes")
-{
-    <h1>Welcome Admin. Now you can create user Role.</h1>
-    <h3>
-        <li>@Html.ActionLink("Manage Role", "Index", "Roles")</li>
-    </h3>
-}
-else
-{
-    <h2>  Welcome <strong>@ViewBag.Name</strong> :) .We will add user module soon </h2>
-}  
+                @if (currentUserClaims.ContainsKey("Roles/Show"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "Roles")">
+                            --> Role Show
+                        </a>
+                    </li>
+                }
+
+                @if (currentUserClaims.ContainsKey("Roles/Add"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            --> Role Add
+                        </a>
+                    </li>
+                }
+
+                @if (currentUserClaims.ContainsKey("Roles/Edit"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            --> Role Edit
+                        </a>
+                    </li>
+                }
+
+
+                @if (currentUserClaims.ContainsKey("Roles/Delete"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            --> Role Delete
+                        </a>
+                    </li>
+                }
+
+
+                <li class="nav-item">
+                    <a class="nav-link active disabled" href="#">Claims</a>
+                </li>
+
+                @if (currentUserClaims.ContainsKey("Claim/Show"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index","RoleClaims")">
+                            --> Claim Show
+                        </a>
+                    </li>
+                }
+
+                @if (currentUserClaims.ContainsKey("Claim/Edit"))
+                { }
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        --> Claim Edit
+                    </a>
+                </li>
+
+
+            </ul>
+        </div>
+        <div class="col-9">
+            @if (currentUserClaims.ContainsKey("AdminUser"))
+            {
+                <div>
+                    admin roles <br />
+                    Welcome (<strong>@ViewBag.Username</strong>) <br />
+                    <br />
+                    Your Claims: <br />
+
+                    <ul>
+                        @foreach (var claimname in currentUserClaims.Keys)
+                        {
+                            <li>@claimname</li>
+                        }
+
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <div>
+                    not admin roles <br />
+                    Welcome (<strong>@ViewBag.Username</strong>) <br />
+                    <br />
+                    Your Claims:
+                </div>
+            }
+        </div>
+    </div>
+</div>
