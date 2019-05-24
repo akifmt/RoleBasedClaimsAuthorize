@@ -3,6 +3,7 @@
     ViewBag.Title = "Index";
 
     Dictionary<string, bool> currentUserClaims = ViewBag.CurrentUserClaims;
+    List<string> currentUserRoles = ViewBag.CurrentUserRoles;
 }
 
 <div class="container">
@@ -33,83 +34,72 @@
                 @if (currentUserClaims.ContainsKey("Roles/Add"))
                 {
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="@Url.Action("Create", "Roles")">
                             --> Role Add
                         </a>
                     </li>
                 }
 
-                @if (currentUserClaims.ContainsKey("Roles/Edit"))
-                {
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            --> Role Edit
-                        </a>
-                    </li>
-                }
-
-
-                @if (currentUserClaims.ContainsKey("Roles/Delete"))
-                {
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            --> Role Delete
-                        </a>
-                    </li>
-                }
-
-
                 <li class="nav-item">
-                    <a class="nav-link active disabled" href="#">Claims</a>
+                    <a class="nav-link active disabled" href="#">Role Claims</a>
                 </li>
 
-                @if (currentUserClaims.ContainsKey("Claim/Show"))
+                @if (currentUserClaims.ContainsKey("RoleClaims/Show"))
                 {
                     <li class="nav-item">
                         <a class="nav-link" href="@Url.Action("Index","RoleClaims")">
-                            --> Claim Show
+                            --> Role Claims Show
                         </a>
                     </li>
                 }
 
-                @if (currentUserClaims.ContainsKey("Claim/Edit"))
-                { }
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        --> Claim Edit
-                    </a>
+                    <a class="nav-link active disabled" href="#">Users</a>
                 </li>
 
+                @if (currentUserClaims.ContainsKey("Users/Show"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "Users")">
+                            --> User Show
+                        </a>
+                    </li>
+                }
+
+                @if (currentUserClaims.ContainsKey("Users/Add"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Create", "Users")">
+                            --> User Add
+                        </a>
+                    </li>
+                }
 
             </ul>
         </div>
         <div class="col-9">
-            @if (currentUserClaims.ContainsKey("AdminUser"))
-            {
-                <div>
-                    admin roles <br />
-                    Welcome (<strong>@ViewBag.Username</strong>) <br />
-                    <br />
-                    Your Claims: <br />
+            <div>
+                Welcome (<strong>@ViewBag.Username</strong>) <br />
+                <br />
+                Your Roles: <br />
+                <ul>
+                    @foreach (var rolename in currentUserRoles)
+                    {
+                        <li>@rolename</li>
+                    }
+                </ul>
 
-                    <ul>
-                        @foreach (var claimname in currentUserClaims.Keys)
-                        {
-                            <li>@claimname</li>
-                        }
+                Your Claims: <br />
 
-                    </ul>
-                </div>
-            }
-            else
-            {
-                <div>
-                    not admin roles <br />
-                    Welcome (<strong>@ViewBag.Username</strong>) <br />
-                    <br />
-                    Your Claims:
-                </div>
-            }
+                <ul>
+                    @foreach (var claimname in currentUserClaims.Keys)
+                    {
+                        <li>@claimname</li>
+                    }
+
+                </ul>
+            </div>
+
         </div>
     </div>
 </div>

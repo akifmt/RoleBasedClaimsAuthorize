@@ -1,4 +1,4 @@
-﻿@model MatRoleClaim.Models.ApplicationRole
+﻿@model MatRoleClaim.Models.RoleClaimsViewModel
 
 @{
     ViewBag.Title = "Details";
@@ -7,28 +7,36 @@
 <h2>Details</h2>
 
 <div>
-    <h4>ApplicationRole</h4>
+    <h4>Role Claims Details</h4>
     <hr />
     <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
+        <dt>@Html.DisplayNameFor(model => model.RoleId)</dt>
+        <dd>@Html.DisplayFor(model => model.RoleId)</dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.Description)
-        </dd>
+        <dt>@Html.DisplayNameFor(model => model.RoleName)</dt>
+        <dd>@Html.DisplayFor(model => model.RoleName)</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
+        <dt>@Html.DisplayNameFor(model => model.RoleDescription)</dt>
+        <dd>@Html.DisplayFor(model => model.RoleDescription)</dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.Name)
+        <dt>@Html.DisplayNameFor(model => model.Claims)</dt>
+        <dd class="col-3">
+            <ul class="list-group">
+                @foreach (var claim in Model.Claims)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @string.Format("{0}/{1}", claim.ClaimType, claim.ClaimValue)
+                        <span class="badge @(claim.Status ? "badge-success" : "badge-danger") badge-pill">
+                            @claim.Status
+                        </span>
+                    </li>
+                }
+            </ul>
         </dd>
 
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Edit", "Edit", new { id = Model.RoleId }) |
     @Html.ActionLink("Back to List", "Index")
 </p>

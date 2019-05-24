@@ -28,54 +28,49 @@ namespace MatRoleClaim
         {
             ApplicationDbContext context = new ApplicationDbContext();
 
-            //var roleManager = new RoleManager<ApplicationRole>(new RoleStore<ApplicationRole>(context));
-            //var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
-
             var roleManager = new ApplicationRoleManager(new ApplicationRoleStore(context));
             var userManager = new ApplicationUserManager(new ApplicationUserStore(context));
 
-            if (!roleManager.RoleExists("Admin"))
+            if (!roleManager.RoleExists("SuperAdmin"))
             {
                 // create Admin role  
                 var roleAdmin = new ApplicationRole();
-                roleAdmin.Name = "Admin";
-                roleAdmin.Description = "Admin user role. Change and configurate roles, users...";
+                roleAdmin.Name = "SuperAdmin";
+                roleAdmin.Description = "SuperAdmin user role. Change and configurate roles, users...";
                 roleManager.Create(roleAdmin);
 
-                // create Claims Roles
-                ApplicationClaim claim01 = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Roles", ClaimValue = "Show", Description = "Show Roles" });
-                ApplicationClaim claim02 = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Roles", ClaimValue = "Add", Description = "Add Roles" });
-                ApplicationClaim claim03 = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Roles", ClaimValue = "Edit", Description = "Edit Roles" });
-                ApplicationClaim claim04 = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Roles", ClaimValue = "Delete", Description = "Delete Roles" });
-                // create Claims Admin
+                // create Claims
                 ApplicationClaim claim01A = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Admin", ClaimValue = "Show", Description = "Show Admin Page" });
-                ApplicationClaim claim02A = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Admin", ClaimValue = "Add", Description = "Add Admin Page" });
-                ApplicationClaim claim03A = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Admin", ClaimValue = "Edit", Description = "Edit Admin Page" });
-                ApplicationClaim claim04A = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Admin", ClaimValue = "Delete", Description = "Delete Admin Page" });
-                // create Claims show claim
-                ApplicationClaim claim01C = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Claim", ClaimValue = "Show", Description = "Show Role Claims" });
-                ApplicationClaim claim02C = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Claim", ClaimValue = "Edit", Description = "Edit Role Claims" });
+
+                ApplicationClaim claim01R = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Roles", ClaimValue = "Show", Description = "Show Roles" });
+                ApplicationClaim claim02R = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Roles", ClaimValue = "Add", Description = "Add Roles" });
+                ApplicationClaim claim03R = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Roles", ClaimValue = "Edit", Description = "Edit Roles" });
+                ApplicationClaim claim04R = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Roles", ClaimValue = "Delete", Description = "Delete Roles" });
+
+                ApplicationClaim claim01RC = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "RoleClaims", ClaimValue = "Show", Description = "Show Role Claims" });
+                ApplicationClaim claim02RC = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "RoleClaims", ClaimValue = "Edit", Description = "Edit Role Claims" });
+
+                ApplicationClaim claim01U = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Users", ClaimValue = "Show", Description = "Show Users" });
+                ApplicationClaim claim02U = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Users", ClaimValue = "Add", Description = "Add Users" });
+                ApplicationClaim claim03U = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Users", ClaimValue = "Edit", Description = "Edit Users" });
+                ApplicationClaim claim04U = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Users", ClaimValue = "Delete", Description = "Delete Users" });
+
+                ApplicationClaim claim01B = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Blogs", ClaimValue = "Show", Description = "Show Users" });
+                ApplicationClaim claim02B = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Blogs", ClaimValue = "Add", Description = "Add Users" });
+                ApplicationClaim claim03B = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Blogs", ClaimValue = "Edit", Description = "Edit Users" });
+                ApplicationClaim claim04B = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Blogs", ClaimValue = "Delete", Description = "Delete Users" });
+
 
                 context.SaveChanges();
 
-                //"Admin", "Show"
-
-                // add to Admin role claims
-                roleManager.AddClaim(roleAdmin.Id, claim01.Id);
-                roleManager.AddClaim(roleAdmin.Id, claim02.Id);
-                roleManager.AddClaim(roleAdmin.Id, claim03.Id);
-                roleManager.AddClaim(roleAdmin.Id, claim04.Id);
-                roleManager.AddClaim(roleAdmin.Id, claim01A.Id);
-                roleManager.AddClaim(roleAdmin.Id, claim02A.Id);
-                roleManager.AddClaim(roleAdmin.Id, claim03A.Id);
-                roleManager.AddClaim(roleAdmin.Id, claim04A.Id);
-                roleManager.AddClaim(roleAdmin.Id, claim01C.Id);
-                roleManager.AddClaim(roleAdmin.Id, claim02C.Id);
+                // add to Admin role all claims
+                foreach (var claim in context.Claims)
+                    roleManager.AddClaim(roleAdmin.Id, claim.Id);
 
                 // create a Admin super user                 
                 var userAdmin = new ApplicationUser();
-                userAdmin.UserName = "admin@admin.com";
-                userAdmin.Email = "admin@admin.com";
+                userAdmin.UserName = "sa@sa.com";
+                userAdmin.Email = "sa@sa.com";
                 string userPWD = "123456";
 
                 var chkUser = userManager.Create(userAdmin, userPWD);
@@ -83,20 +78,27 @@ namespace MatRoleClaim
                 // Add default User to Role Admin   
                 if (chkUser.Succeeded)
                 {
-                    var result1 = userManager.AddToRole(userAdmin.Id, "Admin");
+                    var result1 = userManager.AddToRole(userAdmin.Id, "SuperAdmin");
                 }
             }
 
             // creating Creating Manager role    
-            if (!roleManager.RoleExists("Manager"))
+            if (!roleManager.RoleExists("Web Admin"))
             {
-                var role = new ApplicationRole { Name = "Manager", Description = "Manager role." };
+                var role = new ApplicationRole { Name = "Web Admin", Description = "Web Admin role." };
+                roleManager.Create(role);
+            }
+
+            // creating Creating Manager role    
+            if (!roleManager.RoleExists("Blogger"))
+            {
+                var role = new ApplicationRole { Name = "Blogger", Description = "Blogger role. Add, edit, remove posts." };
                 roleManager.Create(role);
             }
             // creating Creating Employee role    
-            if (!roleManager.RoleExists("Employee"))
+            if (!roleManager.RoleExists("User"))
             {
-                var role = new ApplicationRole { Name = "Employee", Description = "Employee role." };
+                var role = new ApplicationRole { Name = "User", Description = "User role. not have any claims" };
                 roleManager.Create(role);
             }
         }

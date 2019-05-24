@@ -9,55 +9,23 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using MatRoleClaim.Models;
+using MatRoleClaim.Models.ViewModels;
 
 namespace MatRoleClaim.Controllers
 {
-    [Authorize]
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
-        private ApplicationSignInManager _signInManager;
-        private ApplicationUserManager _userManager;
-        private ApplicationDbContext _dbContext;
-
         public AccountController()
         {
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
+        public AccountController(ApplicationUserManager userManager, ApplicationRoleManager roleManager, ApplicationSignInManager signInManager)
         {
-            UserManager = userManager;
-            SignInManager = signInManager;
+            base.UserManager = userManager;
+            base.SignInManager = signInManager;
+            base.RoleManager = roleManager;
         }
 
-        public ApplicationSignInManager SignInManager {
-            get {
-                return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-            }
-            private set {
-                _signInManager = value;
-            }
-        }
-
-        public ApplicationUserManager UserManager {
-            get {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-            private set {
-                _userManager = value;
-            }
-        }
-
-        public ApplicationDbContext DbContext {
-            get {
-                return _dbContext ?? Request.GetOwinContext().Get<ApplicationDbContext>();
-            }
-            private set {
-                _dbContext = value;
-            }
-        }
-
-
-        // GET: /Account/Login
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
@@ -65,8 +33,6 @@ namespace MatRoleClaim.Controllers
             return View();
         }
 
-
-        // POST: /Account/Login
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -95,8 +61,6 @@ namespace MatRoleClaim.Controllers
             }
         }
 
-
-        // GET: /Account/Register
         [AllowAnonymous]
         public ActionResult Register()
         {
@@ -105,8 +69,6 @@ namespace MatRoleClaim.Controllers
             return View();
         }
 
-
-        // POST: /Account/Register
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -139,19 +101,12 @@ namespace MatRoleClaim.Controllers
             return View(model);
         }
 
-
-
-
-
-        // GET: /Account/ForgotPassword
         [AllowAnonymous]
         public ActionResult ForgotPassword()
         {
             return View();
         }
 
-
-        // POST: /Account/ForgotPassword
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -162,32 +117,22 @@ namespace MatRoleClaim.Controllers
                 var user = await UserManager.FindByNameAsync(model.Email);
                 if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
                 {
-                    // Don't reveal that the user does not exist or is not confirmed
                     return View("ForgotPasswordConfirmation");
                 }
 
-                // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
-                // Send an email with this link
-                // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-                // var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);		
-                // await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
-                // return RedirectToAction("ForgotPasswordConfirmation", "Account");
             }
 
-            // If we got this far, something failed, redisplay form
             return View(model);
         }
 
-
-        // GET: /Account/ForgotPasswordConfirmation
         [AllowAnonymous]
         public ActionResult ForgotPasswordConfirmation()
         {
             return View();
         }
 
-        // POST: /Account/LogOff
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
@@ -195,35 +140,9 @@ namespace MatRoleClaim.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (_userManager != null)
-                {
-                    _userManager.Dispose();
-                    _userManager = null;
-                }
-
-                if (_signInManager != null)
-                {
-                    _signInManager.Dispose();
-                    _signInManager = null;
-                }
-            }
-
-            base.Dispose(disposing);
-        }
-
         #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
-
-        private IAuthenticationManager AuthenticationManager {
-            get {
-                return HttpContext.GetOwinContext().Authentication;
-            }
-        }
 
         private void AddErrors(IdentityResult result)
         {

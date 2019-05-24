@@ -1,4 +1,4 @@
-﻿@model MatRoleClaim.Models.ApplicationRole
+﻿@model MatRoleClaim.Models.RoleClaimsViewModel
 
 @{
     ViewBag.Title = "Edit";
@@ -10,34 +10,56 @@
 {
     @Html.AntiForgeryToken()
     
-    <div class="form-horizontal">
-        <h4>ApplicationRole</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.Id)
+<div class="form-horizontal">
+    <h4>Role Claims</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.RoleId)
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.RoleName, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.RoleName, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.RoleName, "", new { @class = "text-danger" })
         </div>
     </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.RoleDescription, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.RoleDescription, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.RoleDescription, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Claims, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @for (int i = 0; i < Model.Claims.Count(); i++)
+            {
+            <div class="form-check">
+                @Html.HiddenFor(model => model.Claims[i].ClaimId)
+                @Html.HiddenFor(model => model.Claims[i].ClaimType)
+                @Html.HiddenFor(model => model.Claims[i].ClaimValue)
+                @Html.HiddenFor(model => model.Claims[i].Description)
+
+                @*@Html.CheckBoxFor(model => model.Claims[i].Status) Html hepler ile yöntem*@
+
+                <input id="Claims[@i].Status" name="Claims[@i].Status" value="true"  @(Model.Claims[i].Status ? "checked=\"checked\"" : "") type="checkbox" class="form-check-input" />
+                <label class="form-check-label" for="Claims[@i].Status">
+                    @string.Format("{0}/{1} ({2})", Model.Claims[i].ClaimType, Model.Claims[i].ClaimValue, Model.Claims[i].Status)
+                </label>
+            </div>
+            }
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save" class="btn btn-default" />
+        </div>
+    </div>
+</div>
 }
 
 <div>

@@ -7,6 +7,7 @@ using MatRoleClaim.Attributes;
 using MatRoleClaim.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
 
 namespace MatRoleClaim.Controllers
 {
@@ -53,33 +54,84 @@ namespace MatRoleClaim.Controllers
             }
         }
 
+        public IAuthenticationManager AuthenticationManager {
+            get {
+                return HttpContext.GetOwinContext().Authentication;
+            }
+        }
+
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             base.OnActionExecuting(filterContext);
-            this.SetUsertoViewBag();
+
+            // if user login, load user information
+            if (User.Identity.IsAuthenticated)
+                this.SetUsertoViewBag();
         }
 
         /// <summary>
         /// Set user claims to ViewBag.CurrentUserClaims
-        /// (if admin user add "AdminUser" to claims)
+        /// (if admin user add "SuperAdmin" to claims)
         /// </summary>
         public void SetUsertoViewBag()
         {
             ViewBag.UserName = User.Identity.GetUserName();
-
             string currentUserId = User.Identity.GetUserId();
-            List<string> userroles = UserManager.GetRoles(currentUserId).ToList();
+
+            List<string> currentUserRoles = new List<string>();
+            try
+            {
+                currentUserRoles = UserManager.GetRoles(currentUserId).ToList();
+            }
+            catch (Exception ex)
+            {
+                AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+                ViewBag.CookieErrorMessage = "COOKIE USER ERROR: " + ex.Message;
+            }
 
             Dictionary<string, bool> currentUserClaims = new Dictionary<string, bool>();
-            if (userroles.Contains("Admin"))
-                currentUserClaims.Add("AdminUser", true);
+            if (currentUserRoles.Contains("SuperAdmin"))
+                currentUserClaims.Add("SuperAdmin", true);
 
-            foreach (string userrole in userroles)
+            foreach (string userrole in currentUserRoles)
                 RoleManager.GetClaims(userrole).ToList().ForEach(x => currentUserClaims.Add(x, true));
 
             ViewBag.CurrentUserClaims = currentUserClaims;
+            ViewBag.CurrentUserRoles = currentUserRoles;
         }
 
 
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (UserManager != null)
+                {
+                    UserManager.Dispose();
+                    UserManager = null;
+                }
+
+                if (SignInManager != null)
+                {
+                    SignInManager.Dispose();
+                    SignInManager = null;
+                }
+
+                if (RoleManager != null)
+                {
+                    RoleManager.Dispose();
+                    RoleManager = null;
+                }
+
+                if (DbContext != null)
+                {
+                    DbContext.Dispose();
+                    DbContext = null;
+                }
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

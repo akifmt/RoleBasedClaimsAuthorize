@@ -1,24 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.ComponentModel.DataAnnotations;
 
-namespace MatRoleClaim.Models
+namespace MatRoleClaim.Models.ViewModels
 {
-    public class LoginViewModel
-    {
-        [Required]
-        [Display(Name = "Email")]
-        [EmailAddress]
-        public string Email { get; set; }
-
-        [Required]
-        [DataType(DataType.Password)]
-        [Display(Name = "Password")]
-        public string Password { get; set; }
-
-        [Display(Name = "Remember me?")]
-        public bool RememberMe { get; set; }
-    }
-
     public class RegisterViewModel
     {
         [Required]
@@ -40,13 +26,5 @@ namespace MatRoleClaim.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
-    }
-
-    public class ForgotPasswordViewModel
-    {
-        [Required]
-        [EmailAddress]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
     }
 }

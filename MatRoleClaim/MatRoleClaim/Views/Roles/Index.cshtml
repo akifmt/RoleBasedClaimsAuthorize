@@ -1,34 +1,47 @@
-﻿@model IEnumerable<Microsoft.AspNet.Identity.EntityFramework.IdentityRole>
+﻿@model IEnumerable<MatRoleClaim.Models.ApplicationRole>
 @{
     ViewBag.Title = "Add Role";
 }
-<table style=" background-color:#FFFFFF; border: dashed 3px #6D7B8D; padding: 5px;width: 99%;table-layout:fixed;" cellpadding="6" cellspacing="6">
-    <tr style="height: 30px; background-color:#336699 ; color:#FFFFFF ;border: solid 1px #659EC7;">
-        <td align="center" colspan="2">
-            <h2> Create User Roles</h2>
-        </td>
 
+<h2>Roles Index</h2>
+
+<p>
+    @Html.ActionLink("Create New Role", "Create", "Roles")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th></th>
     </tr>
 
+    @foreach (var item in Model)
+    {
     <tr>
         <td>
-            <table id="tbrole" style="width:100%; border:dotted 1px; background-color:gainsboro; padding-left:10px;">
-
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td style="width:100%; border:dotted 1px;">
-                            @item.Name
-                        </td>
-                    </tr>}
-            </table>
+            @Html.DisplayFor(modelItem => item.Id)
         </td>
-        <td align="right" style="color:#FFFFFF;padding-right:10px;">
-
-
-            <h3>   @Html.ActionLink("Click to Create New Role", "Create", "Roles") </h3>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+            @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
         </td>
     </tr>
+    }
+
 </table>
 
 
