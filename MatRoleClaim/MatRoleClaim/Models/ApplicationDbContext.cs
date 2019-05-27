@@ -1,4 +1,6 @@
-﻿using System.Data.Entity;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure.Annotations;
 using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace MatRoleClaim.Models
@@ -29,8 +31,20 @@ namespace MatRoleClaim.Models
             modelBuilder.Entity<ApplicationClaim>().ToTable("Claims");
             modelBuilder.Entity<RoleClaim>().ToTable("RoleClaims");
 
-            //modelBuilder.Ignore<IdentityUserClaim>(); // not used!!
-            //modelBuilder.Ignore<IdentityUserLogin>(); // not used!!
+            modelBuilder.Entity<ApplicationUser>()
+                .Ignore(x => x.AccessFailedCount)
+                .Ignore(x => x.EmailConfirmed)
+                .Ignore(x => x.LockoutEnabled)
+                .Ignore(x => x.LockoutEndDateUtc)
+                .Ignore(x => x.PhoneNumber)
+                .Ignore(x => x.PhoneNumberConfirmed)
+                .Ignore(x => x.TwoFactorEnabled);
+
+            //modelBuilder.Ignore<IdentityUserClaim>();
+            //modelBuilder.Entity<ApplicationUser>().Ignore(u => u.Claims);
+
+            //modelBuilder.Ignore<ApplicationUserLogin>();
+            //modelBuilder.Entity<ApplicationUser>().Ignore(u => u.Logins);
 
         }
 

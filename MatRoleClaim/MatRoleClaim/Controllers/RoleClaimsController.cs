@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using MatRoleClaim.Attributes;
 using MatRoleClaim.Models;
+using MatRoleClaim.Models.ViewModels;
 
 namespace MatRoleClaim.Controllers
 {
