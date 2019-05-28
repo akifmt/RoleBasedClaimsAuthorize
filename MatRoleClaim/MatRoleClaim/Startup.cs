@@ -20,11 +20,11 @@ namespace MatRoleClaim
         {
             ConfigureAuth(app);
 
-            // Create default user
-            CreateRolesandUsers();
+            // Create default roles and users
+            CreateDefaultRolesUsers();
         }
 
-        private void CreateRolesandUsers()
+        private void CreateDefaultRolesUsers()
         {
             ApplicationDbContext context = new ApplicationDbContext();
 
@@ -33,47 +33,21 @@ namespace MatRoleClaim
 
             if (!roleManager.RoleExists("SuperAdmin"))
             {
-                // create Admin role  
-                var roleAdmin = new ApplicationRole();
-                roleAdmin.Name = "SuperAdmin";
-                roleAdmin.Description = "SuperAdmin user role. Change and configurate roles, users...";
+                // create ALL Claims
+                CreateClaims();
+
+                // create Admin Role  
+                var roleAdmin = new ApplicationRole { Name = "SuperAdmin", Description = "SuperAdmin user role. Change and configurate roles, users..." };
                 roleManager.Create(roleAdmin);
 
-                // create Claims
-                ApplicationClaim claim01A = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Admin", ClaimValue = "Show", Description = "Show Admin Page" });
-
-                ApplicationClaim claim01R = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Roles", ClaimValue = "Show", Description = "Show Roles" });
-                ApplicationClaim claim02R = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Roles", ClaimValue = "Add", Description = "Add Roles" });
-                ApplicationClaim claim03R = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Roles", ClaimValue = "Edit", Description = "Edit Roles" });
-                ApplicationClaim claim04R = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Roles", ClaimValue = "Delete", Description = "Delete Roles" });
-
-                ApplicationClaim claim01RC = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "RoleClaims", ClaimValue = "Show", Description = "Show Role Claims" });
-                ApplicationClaim claim02RC = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "RoleClaims", ClaimValue = "Edit", Description = "Edit Role Claims" });
-
-                ApplicationClaim claim01U = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Users", ClaimValue = "Show", Description = "Show Users" });
-                ApplicationClaim claim02U = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Users", ClaimValue = "Add", Description = "Add Users" });
-                ApplicationClaim claim03U = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Users", ClaimValue = "Edit", Description = "Edit Users" });
-                ApplicationClaim claim04U = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Users", ClaimValue = "Delete", Description = "Delete Users" });
-
-                ApplicationClaim claim01B = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Blogs", ClaimValue = "Show", Description = "Show Users" });
-                ApplicationClaim claim02B = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Blogs", ClaimValue = "Add", Description = "Add Users" });
-                ApplicationClaim claim03B = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Blogs", ClaimValue = "Edit", Description = "Edit Users" });
-                ApplicationClaim claim04B = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Blogs", ClaimValue = "Delete", Description = "Delete Users" });
-
-
-                context.SaveChanges();
-
-                // add to Admin role all claims
+                // add to Super Admin role all claims
                 foreach (var claim in context.Claims)
                     roleManager.AddClaim(roleAdmin.Id, claim.Id);
 
                 // create a Admin super user                 
-                var userAdmin = new ApplicationUser();
-                userAdmin.UserName = "sa@sa.com";
-                userAdmin.Email = "sa@sa.com";
-                string userPWD = "123456";
-
-                var chkUser = userManager.Create(userAdmin, userPWD);
+                var userAdmin = new ApplicationUser { UserName = "sa@sa.com", Email = "sa@sa.com" };
+                string userAdminPassword = "123456";
+                var chkUser = userManager.Create(userAdmin, userAdminPassword);
 
                 // Add default User to Role Admin   
                 if (chkUser.Succeeded)
@@ -101,6 +75,34 @@ namespace MatRoleClaim
                 var role = new ApplicationRole { Name = "User", Description = "User role. not have any claims" };
                 roleManager.Create(role);
             }
+        }
+
+        private void CreateClaims()
+        {
+            ApplicationDbContext context = new ApplicationDbContext();
+
+            // create Claims
+            ApplicationClaim claim01A = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Admin", ClaimValue = "Show", Description = "Show Admin Page" });
+
+            ApplicationClaim claim01R = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Roles", ClaimValue = "Show", Description = "Show Roles" });
+            ApplicationClaim claim02R = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Roles", ClaimValue = "Add", Description = "Add Roles" });
+            ApplicationClaim claim03R = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Roles", ClaimValue = "Edit", Description = "Edit Roles" });
+            ApplicationClaim claim04R = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Roles", ClaimValue = "Delete", Description = "Delete Roles" });
+
+            ApplicationClaim claim01RC = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "RoleClaims", ClaimValue = "Show", Description = "Show Role Claims" });
+            ApplicationClaim claim02RC = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "RoleClaims", ClaimValue = "Edit", Description = "Edit Role Claims" });
+
+            ApplicationClaim claim01U = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Users", ClaimValue = "Show", Description = "Show Users" });
+            ApplicationClaim claim02U = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Users", ClaimValue = "Add", Description = "Add Users" });
+            ApplicationClaim claim03U = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Users", ClaimValue = "Edit", Description = "Edit Users" });
+            ApplicationClaim claim04U = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Users", ClaimValue = "Delete", Description = "Delete Users" });
+
+            ApplicationClaim claim01B = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Blogs", ClaimValue = "Show", Description = "Show Users" });
+            ApplicationClaim claim02B = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Blogs", ClaimValue = "Add", Description = "Add Users" });
+            ApplicationClaim claim03B = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Blogs", ClaimValue = "Edit", Description = "Edit Users" });
+            ApplicationClaim claim04B = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Blogs", ClaimValue = "Delete", Description = "Delete Users" });
+
+            context.SaveChanges();
         }
 
     }

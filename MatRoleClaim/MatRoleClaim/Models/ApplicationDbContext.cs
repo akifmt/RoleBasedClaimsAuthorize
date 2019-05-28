@@ -31,30 +31,19 @@ namespace MatRoleClaim.Models
             modelBuilder.Entity<ApplicationClaim>().ToTable("Claims");
             modelBuilder.Entity<RoleClaim>().ToTable("RoleClaims");
 
-            //modelBuilder.Entity<ApplicationUser>()
-            //    .Ignore(x => x.AccessFailedCount)
-            //    .Ignore(x => x.EmailConfirmed)
-            //    .Ignore(x => x.LockoutEnabled)
-            //    .Ignore(x => x.LockoutEndDateUtc)
-            //    .Ignore(x => x.PhoneNumber)
-            //    .Ignore(x => x.PhoneNumberConfirmed)
-            //    .Ignore(x => x.TwoFactorEnabled);
+            modelBuilder.Entity<ApplicationUser>()
+                .Ignore(x => x.AccessFailedCount)
+                .Ignore(x => x.EmailConfirmed)
+                .Ignore(x => x.LockoutEnabled)
+                .Ignore(x => x.LockoutEndDateUtc)
+                .Ignore(x => x.PhoneNumber)
+                .Ignore(x => x.PhoneNumberConfirmed)
+                .Ignore(x => x.TwoFactorEnabled);
 
+            // not used
             //modelBuilder.Ignore<IdentityUserClaim>();
-
-            //modelBuilder.Entity<IdentityUser>()
-            //    .Ignore(x => x.AccessFailedCount)
-            //    .Ignore(x => x.EmailConfirmed)
-            //    .Ignore(x => x.LockoutEnabled)
-            //    .Ignore(x => x.LockoutEndDateUtc)
-            //    .Ignore(x => x.PhoneNumber)
-            //    .Ignore(x => x.PhoneNumberConfirmed)
-            //    .Ignore(x => x.TwoFactorEnabled);
-
-            //modelBuilder.Entity<IdentityUser>().Ignore(u => u.Claims);
             //modelBuilder.Entity<ApplicationUser>().Ignore(u => u.Claims);
-
-            //modelBuilder.Ignore<ApplicationUserLogin>();
+            //modelBuilder.Ignore<IdentityUserLogin>();
             //modelBuilder.Entity<ApplicationUser>().Ignore(u => u.Logins);
 
         }
