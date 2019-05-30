@@ -9,124 +9,111 @@ using System.Web.Mvc;
 using MatRoleClaim.Models;
 using MatRoleClaim.Models.IdentityModels;
 using MatRoleClaim.Models.ViewModels;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace MatRoleClaim.Controllers
 {
     public class UserRolesController : BaseController
     {
-        // GET: UserRoles
         public ActionResult Index()
         {
-            List<UserRolesViewModel> userroles = new List<UserRolesViewModel>();
-            
             List<ApplicationRole> allroles = DbContext.Roles.ToList();
-
             List<UserRolesViewModel> allusersWithRoles = new List<UserRolesViewModel>();
+
             foreach (var user in DbContext.Users)
             {
-                UserRolesViewModel userWithRoles = new UserRolesViewModel { UserId = user.Id, UserName = user.UserName, UserEmail = user.Email, Roles = new List<ApplicationRole>() };
-                foreach (var userRole in user.Roles)
-                {
-                    userWithRoles.Roles.Add(allroles.Where(x => x.Id == userRole.RoleId).FirstOrDefault());
-                }
+                UserRolesViewModel userWithRoles = new UserRolesViewModel { UserId = user.Id, UserName = user.UserName, UserEmail = user.Email, Roles = new List<RoleViewModel>() };
+                user.Roles.ToList().ForEach(x => userWithRoles.Roles.Add((RoleViewModel)allroles.Find(y => y.Id == x.RoleId)));
+                allusersWithRoles.Add(userWithRoles);
             }
 
             return View(allusersWithRoles);
         }
 
-        // GET: UserRoles/Details/5
         public ActionResult Details(string id)
         {
             if (id == null)
-            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+
             ApplicationUser applicationUser = DbContext.Users.Find(id);
             if (applicationUser == null)
-            {
                 return HttpNotFound();
-            }
-            return View(applicationUser);
-        }
 
-        // GET: UserRoles/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: UserRoles/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Email,PasswordHash,SecurityStamp,UserName")] ApplicationUser applicationUser)
-        {
-            if (ModelState.IsValid)
+            UserRolesViewModel userWithRoles = new UserRolesViewModel
             {
-                DbContext.Users.Add(applicationUser);
-                DbContext.SaveChanges();
-                return RedirectToAction("Index");
+                UserId = applicationUser.Id,
+                UserName = applicationUser.UserName,
+                UserEmail = applicationUser.Email,
+                Roles = new List<RoleViewModel>()
+            };
+
+            List<ApplicationRole> allroles = DbContext.Roles.ToList();
+            foreach (var role in applicationUser.Roles.ToList())
+            {
+                ApplicationRole applicationRole = allroles.Find(y => y.Id == role.RoleId);
+                RoleViewModel roleViewModel = new RoleViewModel { Id = applicationRole.Id, Name = applicationRole.Name, Description = applicationRole.Description, Status = true };
+                userWithRoles.Roles.Add(roleViewModel);
             }
 
-            return View(applicationUser);
+            return View(userWithRoles);
         }
 
-        // GET: UserRoles/Edit/5
         public ActionResult Edit(string id)
         {
             if (id == null)
-            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+
             ApplicationUser applicationUser = DbContext.Users.Find(id);
             if (applicationUser == null)
-            {
                 return HttpNotFound();
+
+            UserRolesViewModel userWithRoles = new UserRolesViewModel
+            {
+                UserId = applicationUser.Id,
+                UserName = applicationUser.UserName,
+                UserEmail = applicationUser.Email,
+                Roles = new List<RoleViewModel>()
+            };
+
+            List<IdentityUserRole> userRoles = applicationUser.Roles.ToList();
+            List<ApplicationRole> allRoles = DbContext.Roles.ToList();
+            foreach (var role in allRoles)
+            {
+                userWithRoles.Roles.Add(
+                    new RoleViewModel
+                    {
+                        Id = role.Id,
+                        Name = role.Name,
+                        Description = role.Description,
+                        Status = userRoles.Any(x => x.RoleId == role.Id),
+                    });
             }
-            return View(applicationUser);
+
+            return View(userWithRoles);
         }
 
-        // POST: UserRoles/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Email,PasswordHash,SecurityStamp,UserName")] ApplicationUser applicationUser)
+        public ActionResult Edit([Bind(Include = "UserId,UserEmail,UserName,Roles")] UserRolesViewModel userRolesViewModel)
         {
             if (ModelState.IsValid)
             {
+                ApplicationUser applicationUser = DbContext.Users.Find(userRolesViewModel.UserId);
+
+                // remove old roles in this user
+                applicationUser.Roles.Clear();
+
                 DbContext.Entry(applicationUser).State = EntityState.Modified;
+
+                // add role to user
+                foreach (var role in userRolesViewModel.Roles)
+                    if (role.Status)
+                        applicationUser.Roles.Add(new IdentityUserRole { UserId = applicationUser.Id, RoleId = role.Id });
+
                 DbContext.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(applicationUser);
-        }
-
-        // GET: UserRoles/Delete/5
-        public ActionResult Delete(string id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            ApplicationUser applicationUser = DbContext.Users.Find(id);
-            if (applicationUser == null)
-            {
-                return HttpNotFound();
-            }
-            return View(applicationUser);
-        }
-
-        // POST: UserRoles/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(string id)
-        {
-            ApplicationUser applicationUser = DbContext.Users.Find(id);
-            DbContext.Users.Remove(applicationUser);
-            DbContext.SaveChanges();
-            return RedirectToAction("Index");
+            return View(userRolesViewModel);
         }
 
     }

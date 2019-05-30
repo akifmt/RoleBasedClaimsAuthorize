@@ -1,4 +1,4 @@
-﻿@model MatRoleClaim.Models.IdentityModels.ApplicationUser
+﻿@model MatRoleClaim.Models.ViewModels.UserRolesViewModel
 
 @{
     ViewBag.Title = "Details";
@@ -7,31 +7,15 @@
 <h2>Details</h2>
 
 <div>
-    <h4>ApplicationUser</h4>
+    <h4>UserRoles</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Email)
+            @Html.DisplayNameFor(model => model.UserId)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.PasswordHash)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.PasswordHash)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.SecurityStamp)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.SecurityStamp)
+            @Html.DisplayFor(model => model.UserId)
         </dd>
 
         <dt>
@@ -42,9 +26,34 @@
             @Html.DisplayFor(model => model.UserName)
         </dd>
 
+        <dt>
+            @Html.DisplayNameFor(model => model.UserEmail)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserEmail)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Roles)
+        </dt>
+
+        <dd class="col-3">
+            <ul class="list-group">
+                @foreach (var role in Model.Roles)
+                {
+                    <li class="list-group-item py-1 d-flex justify-content-between align-items-center">
+                        @string.Format("{0}", role.Name)
+                        <span class="badge badge-success badge-pill">
+                            True
+                        </span>
+                    </li>
+                }
+            </ul>
+        </dd>
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Edit", "Edit", new { id = Model.UserId }) |
     @Html.ActionLink("Back to List", "Index")
 </p>
