@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
-namespace MatRoleClaim.Models
+namespace MatRoleClaim.Models.IdentityModels
 {
     public class ApplicationUser : IdentityUser
     {

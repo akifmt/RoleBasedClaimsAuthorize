@@ -1,0 +1,60 @@
+﻿@model IEnumerable<MatRoleClaim.Models.ViewModels.UserRolesViewModel>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.UserId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UserEmail)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UserName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Roles)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => user.UserId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => user.UserEmail)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => user.UserName)
+            </td>
+            <td>
+                <ul style="font-size:12px" class="list-group">
+
+                    @foreach (var role in user.Roles)
+                    {
+                        <li class="list-group-item active">
+                            @string.Format("{0}", role.Name)
+                        </li>
+                    }
+                </ul>
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = user.UserId }) |
+                @Html.ActionLink("Details", "Details", new { id = user.UserId }) |
+                @Html.ActionLink("Delete", "Delete", new { id = user.UserId })
+            </td>
+        </tr>
+    }
+
+</table>

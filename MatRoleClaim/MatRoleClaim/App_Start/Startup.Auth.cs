@@ -5,6 +5,7 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Owin;
 using MatRoleClaim.Models;
+using MatRoleClaim.Models.IdentityModels;
 
 namespace MatRoleClaim
 {

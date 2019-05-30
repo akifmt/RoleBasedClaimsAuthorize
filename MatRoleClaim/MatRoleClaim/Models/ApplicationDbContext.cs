@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure.Annotations;
+using MatRoleClaim.Models.IdentityModels;
 using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace MatRoleClaim.Models
@@ -13,7 +14,7 @@ namespace MatRoleClaim.Models
         }
 
         public DbSet<ApplicationClaim> Claims { get; set; }
-        public DbSet<RoleClaim> RoleClaims { get; set; }
+        public DbSet<ApplicationRoleClaim> RoleClaims { get; set; }
 
         public static ApplicationDbContext Create()
         {
@@ -29,7 +30,7 @@ namespace MatRoleClaim.Models
             modelBuilder.Entity<IdentityUserRole>().ToTable("UserRoles");
 
             modelBuilder.Entity<ApplicationClaim>().ToTable("Claims");
-            modelBuilder.Entity<RoleClaim>().ToTable("RoleClaims");
+            modelBuilder.Entity<ApplicationRoleClaim>().ToTable("RoleClaims");
 
             modelBuilder.Entity<ApplicationUser>()
                 .Ignore(x => x.AccessFailedCount)
@@ -47,6 +48,5 @@ namespace MatRoleClaim.Models
             //modelBuilder.Entity<ApplicationUser>().Ignore(u => u.Logins);
 
         }
-
     }
 }

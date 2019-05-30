@@ -9,6 +9,7 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using MatRoleClaim.Models;
 using System.Collections.Generic;
+using MatRoleClaim.Models.IdentityModels;
 
 namespace MatRoleClaim
 {
@@ -127,7 +128,7 @@ namespace MatRoleClaim
             {
                 try
                 {
-                    dbContext.RoleClaims.Add(new RoleClaim { RoleId = roleId, ClaimId = claimId });
+                    dbContext.RoleClaims.Add(new ApplicationRoleClaim { RoleId = roleId, ClaimId = claimId });
                     dbContext.SaveChanges();
                 }
                 catch (Exception ex)

@@ -10,6 +10,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using MatRoleClaim.Models;
 using MatRoleClaim.Models.ViewModels;
+using MatRoleClaim.Models.IdentityModels;
 
 namespace MatRoleClaim.Controllers
 {

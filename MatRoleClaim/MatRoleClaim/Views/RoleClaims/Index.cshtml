@@ -38,18 +38,19 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.RoleDescription)
                 </td>
-                <td style="font-size:10px">
-                    @foreach (var claim in item.Claims)
-                    {
-                        if (claim.Status)
+                <td>
+                    <ul style="font-size:12px" class="list-group">
+
+                        @foreach (var claim in item.Claims)
                         {
-                            <b style="color:green">@string.Format("{0}/{1} ({2})", claim.ClaimType, claim.ClaimValue, claim.Status)</b> <br />
+                            <li class="list-group-item py-1 d-flex justify-content-between align-items-center">
+                                @string.Format("{0}/{1}", claim.ClaimType, claim.ClaimValue)
+                                <span class="badge @(claim.Status ? "badge-success" : "badge-danger") badge-pill">
+                                    @claim.Status
+                                </span>
+                            </li>
                         }
-                        else
-                        {
-                            <b style="color:red">@string.Format("{0}/{1} ({2})", claim.ClaimType, claim.ClaimValue, claim.Status)</b> <br />
-                        }
-                    }
+                    </ul>
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "Edit", new { id = item.RoleId }) |

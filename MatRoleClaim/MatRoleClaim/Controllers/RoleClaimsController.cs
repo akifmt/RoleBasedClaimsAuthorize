@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using MatRoleClaim.Attributes;
 using MatRoleClaim.Models;
+using MatRoleClaim.Models.IdentityModels;
 using MatRoleClaim.Models.ViewModels;
 
 namespace MatRoleClaim.Controllers
@@ -128,7 +129,7 @@ namespace MatRoleClaim.Controllers
             if (ModelState.IsValid)
             {
                 // remove old claims in this role
-                List<RoleClaim> _roleClaims = DbContext.RoleClaims.Where(x => x.RoleId == model.RoleId).ToList();
+                List<ApplicationRoleClaim> _roleClaims = DbContext.RoleClaims.Where(x => x.RoleId == model.RoleId).ToList();
                 if (_roleClaims.Count > 0)
                     DbContext.RoleClaims.RemoveRange(_roleClaims);
                 
@@ -141,7 +142,7 @@ namespace MatRoleClaim.Controllers
                 // add role claims
                 foreach (var roleclaim in model.Claims)
                     if (roleclaim.Status)
-                        DbContext.RoleClaims.Add(new RoleClaim { RoleId = thisrole.Id, ClaimId = roleclaim.ClaimId });
+                        DbContext.RoleClaims.Add(new ApplicationRoleClaim { RoleId = thisrole.Id, ClaimId = roleclaim.ClaimId });
 
                 DbContext.SaveChanges();
                 return RedirectToAction("Index");

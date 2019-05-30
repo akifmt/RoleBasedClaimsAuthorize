@@ -6,33 +6,35 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using MatRoleClaim.Attributes;
 using MatRoleClaim.Models;
 using MatRoleClaim.Models.IdentityModels;
+using MatRoleClaim.Models.ViewModels;
 
 namespace MatRoleClaim.Controllers
 {
-    [Authorize]
-    public class UsersController : BaseController
+    public class UserRolesController : BaseController
     {
-        public UsersController()
-        {
-        }
-
-        public UsersController(ApplicationUserManager userManager, ApplicationRoleManager roleManager, ApplicationSignInManager signInManager)
-        {
-            base.UserManager = userManager;
-            base.RoleManager = roleManager;
-            base.SignInManager = signInManager;
-        }
-
-        [RoleClaimsAuthorize("Users", "Show")]
+        // GET: UserRoles
         public ActionResult Index()
         {
-            return View(DbContext.Users.ToList());
+            List<UserRolesViewModel> userroles = new List<UserRolesViewModel>();
+            
+            List<ApplicationRole> allroles = DbContext.Roles.ToList();
+
+            List<UserRolesViewModel> allusersWithRoles = new List<UserRolesViewModel>();
+            foreach (var user in DbContext.Users)
+            {
+                UserRolesViewModel userWithRoles = new UserRolesViewModel { UserId = user.Id, UserName = user.UserName, UserEmail = user.Email, Roles = new List<ApplicationRole>() };
+                foreach (var userRole in user.Roles)
+                {
+                    userWithRoles.Roles.Add(allroles.Where(x => x.Id == userRole.RoleId).FirstOrDefault());
+                }
+            }
+
+            return View(allusersWithRoles);
         }
 
-        [RoleClaimsAuthorize("Users", "Show")]
+        // GET: UserRoles/Details/5
         public ActionResult Details(string id)
         {
             if (id == null)
@@ -47,16 +49,18 @@ namespace MatRoleClaim.Controllers
             return View(applicationUser);
         }
 
-        [RoleClaimsAuthorize("Users", "Add")]
+        // GET: UserRoles/Create
         public ActionResult Create()
         {
             return View();
         }
 
+        // POST: UserRoles/Create
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [RoleClaimsAuthorize("Users", "Add")]
-        public ActionResult Create([Bind(Include = "Id,Email,EmailConfirmed,PasswordHash,SecurityStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEndDateUtc,LockoutEnabled,AccessFailedCount,UserName")] ApplicationUser applicationUser)
+        public ActionResult Create([Bind(Include = "Id,Email,PasswordHash,SecurityStamp,UserName")] ApplicationUser applicationUser)
         {
             if (ModelState.IsValid)
             {
@@ -68,7 +72,7 @@ namespace MatRoleClaim.Controllers
             return View(applicationUser);
         }
 
-        [RoleClaimsAuthorize("Users", "Edit")]
+        // GET: UserRoles/Edit/5
         public ActionResult Edit(string id)
         {
             if (id == null)
@@ -83,10 +87,12 @@ namespace MatRoleClaim.Controllers
             return View(applicationUser);
         }
 
+        // POST: UserRoles/Edit/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [RoleClaimsAuthorize("Users", "Edit")]
-        public ActionResult Edit([Bind(Include = "Id,Email,EmailConfirmed,PasswordHash,SecurityStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEndDateUtc,LockoutEnabled,AccessFailedCount,UserName")] ApplicationUser applicationUser)
+        public ActionResult Edit([Bind(Include = "Id,Email,PasswordHash,SecurityStamp,UserName")] ApplicationUser applicationUser)
         {
             if (ModelState.IsValid)
             {
@@ -97,7 +103,7 @@ namespace MatRoleClaim.Controllers
             return View(applicationUser);
         }
 
-        [RoleClaimsAuthorize("Users", "Delete")]
+        // GET: UserRoles/Delete/5
         public ActionResult Delete(string id)
         {
             if (id == null)
@@ -112,9 +118,9 @@ namespace MatRoleClaim.Controllers
             return View(applicationUser);
         }
 
+        // POST: UserRoles/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [RoleClaimsAuthorize("Users", "Delete")]
         public ActionResult DeleteConfirmed(string id)
         {
             ApplicationUser applicationUser = DbContext.Users.Find(id);
@@ -123,6 +129,5 @@ namespace MatRoleClaim.Controllers
             return RedirectToAction("Index");
         }
 
-        
     }
 }

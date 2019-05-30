@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿using System;
+using Microsoft.AspNet.Identity.EntityFramework;
 
-namespace MatRoleClaim.Models
+namespace MatRoleClaim.Models.IdentityModels
 {
     public class ApplicationRole : IdentityRole
     {

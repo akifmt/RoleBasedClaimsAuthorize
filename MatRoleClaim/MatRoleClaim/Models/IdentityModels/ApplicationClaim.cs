@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MatRoleClaim.Models
+namespace MatRoleClaim.Models.IdentityModels
 {
     public class ApplicationClaim
     {
@@ -9,6 +9,6 @@ namespace MatRoleClaim.Models
         public string ClaimValue { get; set; }
         public string Description { get; set; }
 
-        public virtual ICollection<RoleClaim> RoleClaims { get; set; }
+        public virtual ICollection<ApplicationRoleClaim> RoleClaims { get; set; }
     }
 }

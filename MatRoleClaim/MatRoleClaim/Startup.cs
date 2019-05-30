@@ -10,6 +10,7 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity.Owin;
 using MatRoleClaim.Attributes;
+using MatRoleClaim.Models.IdentityModels;
 
 [assembly: OwinStartupAttribute(typeof(MatRoleClaim.Startup))]
 namespace MatRoleClaim

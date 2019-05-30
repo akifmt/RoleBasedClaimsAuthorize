@@ -1,6 +1,8 @@
-﻿namespace MatRoleClaim.Models
+﻿using MatRoleClaim.Models.IdentityModels;
+
+namespace MatRoleClaim.Models.IdentityModels
 {
-    public class RoleClaim
+    public class ApplicationRoleClaim
     {
         public int Id { get; set; }
         public string RoleId { get; set; }

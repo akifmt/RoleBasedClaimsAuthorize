@@ -10,6 +10,7 @@ using MatRoleClaim.Attributes;
 using System.Collections.Generic;
 using System.Net;
 using System.Data.Entity;
+using MatRoleClaim.Models.IdentityModels;
 
 namespace MatRoleClaim.Controllers
 {
