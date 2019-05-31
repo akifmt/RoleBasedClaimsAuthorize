@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using MatRoleClaim.Attributes;
 using MatRoleClaim.Models;
 using MatRoleClaim.Models.IdentityModels;
 using MatRoleClaim.Models.ViewModels;
@@ -13,8 +14,10 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace MatRoleClaim.Controllers
 {
+    [Authorize]
     public class UserRolesController : BaseController
     {
+        [RoleClaimsAuthorize("UserRoles", "Show")]
         public ActionResult Index()
         {
             List<ApplicationRole> allroles = DbContext.Roles.ToList();
@@ -30,6 +33,7 @@ namespace MatRoleClaim.Controllers
             return View(allusersWithRoles);
         }
 
+        [RoleClaimsAuthorize("UserRoles", "Show")]
         public ActionResult Details(string id)
         {
             if (id == null)
@@ -58,6 +62,7 @@ namespace MatRoleClaim.Controllers
             return View(userWithRoles);
         }
 
+        [RoleClaimsAuthorize("UserRoles", "Edit")]
         public ActionResult Edit(string id)
         {
             if (id == null)
@@ -94,6 +99,7 @@ namespace MatRoleClaim.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RoleClaimsAuthorize("UserRoles", "Edit")]
         public ActionResult Edit([Bind(Include = "UserId,UserEmail,UserName,Roles")] UserRolesViewModel userRolesViewModel)
         {
             if (ModelState.IsValid)

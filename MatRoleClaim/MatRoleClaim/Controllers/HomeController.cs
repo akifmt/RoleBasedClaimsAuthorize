@@ -6,11 +6,18 @@ using System.Web.Mvc;
 
 namespace MatRoleClaim.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         public ActionResult Index()
         {
             return View();
+        }
+
+        public ActionResult Blog()
+        {
+            ViewBag.Message = "Your blog page.";
+
+            return View(DbContext.Blogs);
         }
 
         public ActionResult About()

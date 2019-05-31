@@ -70,6 +70,7 @@ namespace MatRoleClaim
                 var role = new ApplicationRole { Name = "Blogger", Description = "Blogger role. Add, edit, remove posts." };
                 roleManager.Create(role);
             }
+
             // creating Creating Employee role    
             if (!roleManager.RoleExists("User"))
             {
@@ -97,6 +98,9 @@ namespace MatRoleClaim
             ApplicationClaim claim02U = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Users", ClaimValue = "Add", Description = "Add Users" });
             ApplicationClaim claim03U = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Users", ClaimValue = "Edit", Description = "Edit Users" });
             ApplicationClaim claim04U = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Users", ClaimValue = "Delete", Description = "Delete Users" });
+
+            ApplicationClaim claim01UR = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "UserRoles", ClaimValue = "Show", Description = "Show User Roles" });
+            ApplicationClaim claim02UR = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "UserRoles", ClaimValue = "Edit", Description = "Edit User Roles" });
 
             ApplicationClaim claim01B = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Blogs", ClaimValue = "Show", Description = "Show Users" });
             ApplicationClaim claim02B = context.Claims.Add(new ApplicationClaim { Id = Guid.NewGuid().ToString(), ClaimType = "Blogs", ClaimValue = "Add", Description = "Add Users" });

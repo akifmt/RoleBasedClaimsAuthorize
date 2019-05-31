@@ -47,16 +47,20 @@ namespace MatRoleClaim.Attributes
             {
                 base.HandleUnauthorizedRequest(filterContext); // wrong user id
             }
-            
+
+            IdentityResult result = new IdentityResult();
             foreach (var userrole in userRoles)
             {
-                IdentityResult result = roleManager.HasClaim(userrole, claimType, claimValue);
+                result = roleManager.HasClaim(userrole, claimType, claimValue);
                 if (result == IdentityResult.Success)
+                {
                     base.OnAuthorization(filterContext);
-                else
-                    base.HandleUnauthorizedRequest(filterContext); // user not have this claim
+                    return;
+                }
             }
 
+            if (!result.Succeeded)
+                base.HandleUnauthorizedRequest(filterContext);// user not have this claim
         }
     }
 }

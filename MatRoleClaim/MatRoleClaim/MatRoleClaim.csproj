@@ -190,6 +190,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\BlogsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\RoleClaimsController.cs" />
@@ -201,6 +202,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
+    <Compile Include="Models\Blog.cs" />
     <Compile Include="Models\IdentityModels\ApplicationClaim.cs" />
     <Compile Include="Models\IdentityModels\ApplicationRole.cs" />
     <Compile Include="Models\IdentityModels\ApplicationRoleClaim.cs" />
@@ -306,6 +308,12 @@
     <Content Include="Views\UserRoles\Details.cshtml" />
     <Content Include="Views\UserRoles\Edit.cshtml" />
     <Content Include="Views\UserRoles\Index.cshtml" />
+    <Content Include="Views\Blogs\Create.cshtml" />
+    <Content Include="Views\Blogs\Delete.cshtml" />
+    <Content Include="Views\Blogs\Details.cshtml" />
+    <Content Include="Views\Blogs\Edit.cshtml" />
+    <Content Include="Views\Blogs\Index.cshtml" />
+    <Content Include="Views\Home\Blog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -15,6 +15,7 @@ namespace MatRoleClaim.Models
 
         public DbSet<ApplicationClaim> Claims { get; set; }
         public DbSet<ApplicationRoleClaim> RoleClaims { get; set; }
+        public DbSet<Blog> Blogs { get; set; }
 
         public static ApplicationDbContext Create()
         {

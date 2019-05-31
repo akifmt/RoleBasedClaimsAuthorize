@@ -75,6 +75,20 @@
                     </li>
                 }
 
+                <li class="nav-item">
+                    <a class="nav-link active disabled" href="#">User Roles</a>
+                </li>
+
+                @if (currentUserClaims.ContainsKey("UserRoles/Show"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "UserRoles")">
+                            --> User Show
+                        </a>
+                    </li>
+                }
+
+
             </ul>
         </div>
         <div class="col-9">
