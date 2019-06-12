@@ -31,7 +31,7 @@ namespace MatRoleClaim.Controllers
         [RoleClaimsAuthorize("Roles", "Show")]
         public ActionResult Index()
         {
-            List<ApplicationRole> Roles = base.DbContext.Roles.ToList();
+            List<ApplicationRole> Roles = base.RoleManager.Roles.ToList();
             return View(Roles);
         }
 
@@ -70,7 +70,7 @@ namespace MatRoleClaim.Controllers
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            ApplicationRole role = DbContext.Roles.Find(id);
+            ApplicationRole role = RoleManager.Roles.Where(x=>x.Id == id).FirstOrDefault();
             if (role == null)
                 return HttpNotFound();
 

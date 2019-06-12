@@ -94,7 +94,7 @@ namespace MatRoleClaim.Controllers
                 currentUserClaims.Add("SuperAdmin", true);
 
             foreach (string userrole in currentUserRoles)
-                foreach (var claim in RoleManager.GetClaims(userrole))
+                foreach (var claim in RoleManager.GetClaimNames(userrole))
                     if (!currentUserClaims.ContainsKey(claim))
                         currentUserClaims.Add(claim, true);
 

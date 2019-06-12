@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using MatRoleClaim.Attributes;
@@ -86,12 +87,12 @@ namespace MatRoleClaim.Controllers
         }
 
         [RoleClaimsAuthorize("RoleClaims", "Edit")]
-        public ActionResult Edit(string id)
+        public async Task<ActionResult> Edit(string id)
         {
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            ApplicationRole applicationRole = DbContext.Roles.Find(id);
+            ApplicationRole applicationRole = await RoleManager.FindByIdAsync(id);
             if (applicationRole == null)
                 return HttpNotFound();
 
@@ -103,7 +104,7 @@ namespace MatRoleClaim.Controllers
                 Claims = new List<ClaimViewModel>()
             };
 
-            List<ApplicationClaim> roleclaims = DbContext.RoleClaims.Where(x => x.Role.Name == applicationRole.Name).Select(x => x.Claim).ToList();
+            List<ApplicationClaim> roleclaims = RoleManager.GetClaims(applicationRole.Name).ToList();
             List<ApplicationClaim> allClaims = DbContext.Claims.ToList();
             foreach (var claim in allClaims)
             {
