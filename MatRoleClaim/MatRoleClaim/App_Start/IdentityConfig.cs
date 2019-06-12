@@ -169,11 +169,11 @@ namespace MatRoleClaim
         }
 
         /// <summary>
-        /// Get Role Claims
+        /// Get Role Claims Names
         /// </summary>
         /// <param name="roleName">Role Name</param>
         /// <returns></returns>
-        public IEnumerable<string> GetClaims(string roleName)
+        public IEnumerable<string> GetClaimNames(string roleName)
         {
             using (ApplicationDbContext dbContext = ApplicationDbContext.Create())
             {
@@ -192,6 +192,33 @@ namespace MatRoleClaim
                 catch
                 {
                     return new string[0];
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get Role Claims
+        /// </summary>
+        /// <param name="roleName">Role Name</param>
+        /// <returns></returns>
+        public IEnumerable<ApplicationClaim> GetClaims(string roleName)
+        {
+            using (ApplicationDbContext dbContext = ApplicationDbContext.Create())
+            {
+                try
+                {
+                    ApplicationRole role = dbContext.Roles.Where(x => x.Name == roleName).FirstOrDefault();
+                    if (role == null)
+                        return new List<ApplicationClaim>();
+                    else
+                    {
+                        ApplicationClaim[] roleClaims = dbContext.RoleClaims.Where(x => x.Role.Name == role.Name).Select(x => x.Claim).ToArray();
+                        return roleClaims;
+                    }
+                }
+                catch
+                {
+                    return new List<ApplicationClaim>();
                 }
             }
         }
