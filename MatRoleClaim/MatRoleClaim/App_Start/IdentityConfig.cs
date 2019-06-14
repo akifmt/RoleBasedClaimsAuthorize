@@ -10,6 +10,7 @@ using Microsoft.Owin.Security;
 using MatRoleClaim.Models;
 using System.Collections.Generic;
 using MatRoleClaim.Models.IdentityModels;
+using System.Data.Entity;
 
 namespace MatRoleClaim
 {
@@ -117,7 +118,7 @@ namespace MatRoleClaim
         }
 
         /// <summary>
-        /// Add Claim to Role
+        /// Add a Claim to Role
         /// </summary>
         /// <param name="roleId">Role Id</param>
         /// <param name="claimId">Claim Id</param>
@@ -128,7 +129,45 @@ namespace MatRoleClaim
             {
                 try
                 {
-                    dbContext.RoleClaims.Add(new ApplicationRoleClaim { RoleId = roleId, ClaimId = claimId });
+                    var role = dbContext.Roles.Find(roleId);
+                    dbContext.Roles.Attach(role);
+
+                    var claim = new ApplicationClaim { Id = claimId };
+                    dbContext.Claims.Attach(claim);
+                    role.Claims.Add(claim);
+
+                    dbContext.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    return IdentityResult.Failed("Error adding claim to role. ExceptionMessage:" + ex.Message);
+                }
+            }
+            return IdentityResult.Success;
+        }
+
+        /// <summary>
+        /// Add Claims to a Role
+        /// </summary>
+        /// <param name="roleId">Role Id</param>
+        /// <param name="claimId">Claim Id</param>
+        /// <returns></returns>
+        public IdentityResult AddClaims(string roleId, IEnumerable<string> claimIds)
+        {
+            using (ApplicationDbContext dbContext = ApplicationDbContext.Create())
+            {
+                try
+                {
+                    var role = dbContext.Roles.Find(roleId);
+                    dbContext.Roles.Attach(role);
+
+                    foreach (string claimId in claimIds)
+                    {
+                        var claim = new ApplicationClaim { Id = claimId };
+                        dbContext.Claims.Attach(claim);
+                        role.Claims.Add(claim);
+                    }
+
                     dbContext.SaveChanges();
                 }
                 catch (Exception ex)
@@ -156,7 +195,7 @@ namespace MatRoleClaim
                     if (role == null)
                         return IdentityResult.Failed("Error not found role. RoleName:" + roleName);
 
-                    if (dbContext.RoleClaims.Any(x => x.RoleId == role.Id && x.Claim.ClaimType == claimType && x.Claim.ClaimValue == claimValue))
+                    if (role.Claims.Any(x=>x.ClaimType == claimType && x.ClaimValue == claimValue))
                         return IdentityResult.Success;
                 }
                 catch (Exception ex)
@@ -184,8 +223,7 @@ namespace MatRoleClaim
                         return new string[0];
                     else
                     {
-                        ApplicationClaim[] roleClaims = dbContext.RoleClaims.Where(x => x.Role.Name == role.Name).Select(x => x.Claim).ToArray();
-                        IEnumerable<string> formattedClaims = roleClaims.Select(x => string.Format("{0}/{1}", x.ClaimType, x.ClaimValue));
+                        IEnumerable<string> formattedClaims = role.Claims.Select(x => string.Format("{0}/{1}", x.ClaimType, x.ClaimValue));
                         return formattedClaims;
                     }
                 }
@@ -212,8 +250,7 @@ namespace MatRoleClaim
                         return new List<ApplicationClaim>();
                     else
                     {
-                        ApplicationClaim[] roleClaims = dbContext.RoleClaims.Where(x => x.Role.Name == role.Name).Select(x => x.Claim).ToArray();
-                        return roleClaims;
+                        return role.Claims;
                     }
                 }
                 catch
