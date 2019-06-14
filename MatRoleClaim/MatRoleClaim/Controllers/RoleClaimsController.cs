@@ -21,30 +21,9 @@ namespace MatRoleClaim.Controllers
         public ActionResult Index()
         {
             List<RoleClaimsViewModel> roleClaimsList = new List<RoleClaimsViewModel>();
-            foreach (var role in DbContext.Roles.ToList())
+            foreach (var applicationRole in RoleManager.Roles.ToList())
             {
-                RoleClaimsViewModel roleClaims = new RoleClaimsViewModel
-                {
-                    RoleId = role.Id,
-                    RoleName = role.Name,
-                    RoleDescription = role.Description,
-                    Claims = new List<ClaimViewModel>()
-                };
-
-                List<ApplicationClaim> userclaims = DbContext.RoleClaims.Where(x => x.Role.Name == role.Name).Select(x => x.Claim).ToList();
-                List<ApplicationClaim> allClaims = DbContext.Claims.ToList();
-                foreach (var claim in allClaims)
-                {
-                    roleClaims.Claims.Add(
-                        new ClaimViewModel
-                        {
-                            ClaimId = claim.Id,
-                            ClaimType = claim.ClaimType,
-                            ClaimValue = claim.ClaimValue,
-                            Description = claim.Description,
-                            Status = userclaims.Any(x => x.Id == claim.Id),
-                        });
-                }
+                RoleClaimsViewModel roleClaims = this.GetRoleClaimsViewModel(applicationRole);
                 roleClaimsList.Add(roleClaims);
             }
 
@@ -61,28 +40,8 @@ namespace MatRoleClaim.Controllers
             if (applicationRole == null)
                 return HttpNotFound();
 
-            RoleClaimsViewModel roleClaims = new RoleClaimsViewModel
-            {
-                RoleId = applicationRole.Id,
-                RoleName = applicationRole.Name,
-                RoleDescription = applicationRole.Description,
-                Claims = new List<ClaimViewModel>()
-            };
+            RoleClaimsViewModel roleClaims = this.GetRoleClaimsViewModel(applicationRole);
 
-            List<ApplicationClaim> roleclaims = DbContext.RoleClaims.Where(x => x.Role.Name == applicationRole.Name).Select(x => x.Claim).ToList();
-            List<ApplicationClaim> allClaims = DbContext.Claims.ToList();
-            foreach (var claim in allClaims)
-            {
-                roleClaims.Claims.Add(
-                    new ClaimViewModel
-                    {
-                        ClaimId = claim.Id,
-                        ClaimType = claim.ClaimType,
-                        ClaimValue = claim.ClaimValue,
-                        Description = claim.Description,
-                        Status = roleclaims.Any(x => x.Id == claim.Id),
-                    });
-            }
             return View(roleClaims);
         }
 
@@ -96,28 +55,7 @@ namespace MatRoleClaim.Controllers
             if (applicationRole == null)
                 return HttpNotFound();
 
-            RoleClaimsViewModel roleClaims = new RoleClaimsViewModel
-            {
-                RoleId = applicationRole.Id,
-                RoleName = applicationRole.Name,
-                RoleDescription = applicationRole.Description,
-                Claims = new List<ClaimViewModel>()
-            };
-
-            List<ApplicationClaim> roleclaims = RoleManager.GetClaims(applicationRole.Name).ToList();
-            List<ApplicationClaim> allClaims = DbContext.Claims.ToList();
-            foreach (var claim in allClaims)
-            {
-                roleClaims.Claims.Add(
-                    new ClaimViewModel
-                    {
-                        ClaimId = claim.Id,
-                        ClaimType = claim.ClaimType,
-                        ClaimValue = claim.ClaimValue,
-                        Description = claim.Description,
-                        Status = roleclaims.Any(x => x.Id == claim.Id),
-                    });
-            }
+            RoleClaimsViewModel roleClaims = this.GetRoleClaimsViewModel(applicationRole);
 
             return View(roleClaims);
         }
@@ -125,25 +63,25 @@ namespace MatRoleClaim.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [RoleClaimsAuthorize("RoleClaims", "Edit")]
-        public ActionResult Edit([Bind(Include = "RoleId,RoleName,RoleDescription,Claims")] RoleClaimsViewModel model)
+        public async Task<ActionResult> Edit([Bind(Include = "RoleId,RoleName,RoleDescription,Claims")] RoleClaimsViewModel model)
         {
             if (ModelState.IsValid)
             {
+                ApplicationRole role = await RoleManager.FindByIdAsync(model.RoleId);
+                if (role == null)
+                    return HttpNotFound();
+
                 // remove old claims in this role
-                List<ApplicationRoleClaim> _roleClaims = DbContext.RoleClaims.Where(x => x.RoleId == model.RoleId).ToList();
-                if (_roleClaims.Count > 0)
-                    DbContext.RoleClaims.RemoveRange(_roleClaims);
-                
+                role.Claims.Clear();
+
                 // edit role props
-                ApplicationRole thisrole = DbContext.Roles.Find(model.RoleId);
-                thisrole.Name = model.RoleName;
-                thisrole.Description = model.RoleDescription;
-                DbContext.Entry(thisrole).State = EntityState.Modified;
+                role.Name = model.RoleName;
+                role.Description = model.RoleDescription;
+                DbContext.Entry(role).State = EntityState.Modified;
 
                 // add role claims
-                foreach (var roleclaim in model.Claims)
-                    if (roleclaim.Status)
-                        DbContext.RoleClaims.Add(new ApplicationRoleClaim { RoleId = thisrole.Id, ClaimId = roleclaim.ClaimId });
+                IEnumerable<string> claimIds = model.Claims.Where(x => x.Status == true).Select(x => x.ClaimId);
+                RoleManager.AddClaims(role.Id, claimIds);
 
                 DbContext.SaveChanges();
                 return RedirectToAction("Index");
@@ -151,5 +89,26 @@ namespace MatRoleClaim.Controllers
             return View(model);
         }
 
+
+        // Helpers
+
+        private RoleClaimsViewModel GetRoleClaimsViewModel(ApplicationRole applicationRole)
+        {
+            RoleClaimsViewModel roleWithAllClaims = new RoleClaimsViewModel
+            {
+                RoleId = applicationRole.Id,
+                RoleName = applicationRole.Name,
+                RoleDescription = applicationRole.Description,
+                Claims = DbContext.Claims.ToList().Select(x => new ClaimViewModel
+                {
+                    ClaimId = x.Id,
+                    ClaimType = x.ClaimType,
+                    ClaimValue = x.ClaimValue,
+                    Description = x.Description,
+                    Status = applicationRole.Claims.Any(r => r.Id == x.Id)
+                }).ToList()
+            };
+            return roleWithAllClaims;
+        }
     }
 }

@@ -42,9 +42,8 @@ namespace MatRoleClaim
                 roleManager.Create(roleAdmin);
 
                 // add to Super Admin role all claims
-                foreach (var claim in context.Claims)
-                    roleManager.AddClaim(roleAdmin.Id, claim.Id);
-
+                roleManager.AddClaims(roleAdmin.Id, context.Claims.Select(x=>x.Id));
+                
                 // create a Admin super user                 
                 var userAdmin = new ApplicationUser { UserName = "sa@sa.com", Email = "sa@sa.com" };
                 string userAdminPassword = "123456";

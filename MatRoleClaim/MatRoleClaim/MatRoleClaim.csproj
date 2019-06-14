@@ -205,7 +205,6 @@
     <Compile Include="Models\Blog.cs" />
     <Compile Include="Models\IdentityModels\ApplicationClaim.cs" />
     <Compile Include="Models\IdentityModels\ApplicationRole.cs" />
-    <Compile Include="Models\IdentityModels\ApplicationRoleClaim.cs" />
     <Compile Include="Models\IdentityModels\ApplicationUser.cs" />
     <Compile Include="Models\ViewModels\ChangePasswordViewModel.cs" />
     <Compile Include="Models\ViewModels\ClaimViewModel.cs" />
