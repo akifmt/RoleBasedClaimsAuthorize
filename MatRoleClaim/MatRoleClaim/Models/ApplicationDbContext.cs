@@ -14,7 +14,6 @@ namespace MatRoleClaim.Models
         }
 
         public DbSet<ApplicationClaim> Claims { get; set; }
-        public DbSet<ApplicationRoleClaim> RoleClaims { get; set; }
         public DbSet<Blog> Blogs { get; set; }
 
         public static ApplicationDbContext Create()
@@ -31,7 +30,16 @@ namespace MatRoleClaim.Models
             modelBuilder.Entity<IdentityUserRole>().ToTable("UserRoles");
 
             modelBuilder.Entity<ApplicationClaim>().ToTable("Claims");
-            modelBuilder.Entity<ApplicationRoleClaim>().ToTable("RoleClaims");
+
+            modelBuilder.Entity<ApplicationRole>()
+                .HasMany<ApplicationClaim>(s => s.Claims)
+                .WithMany(c => c.Roles)
+                .Map(cs =>
+                {
+                    cs.MapLeftKey("RoleId");
+                    cs.MapRightKey("ClaimId");
+                    cs.ToTable("RoleClaims");
+                });
 
             modelBuilder.Entity<ApplicationUser>()
                 .Ignore(x => x.AccessFailedCount)
