@@ -17,7 +17,7 @@ namespace MatRoleClaim.Controllers
         {
             ViewBag.Message = "Your blog page.";
 
-            return View(DbContext.Blogs);
+            return View(DbContext.Blogs.Include("Author"));
         }
 
         public ActionResult About()
