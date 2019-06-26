@@ -18,6 +18,29 @@
                 <li class="nav-item">
                     Admin Menu
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link active disabled" href="#">Blogs</a>
+                </li>
+
+                @if (currentUserClaims.ContainsKey("Blogs/Show"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "Blogs")">
+                            --> Blogs Show
+                        </a>
+                    </li>
+                }
+
+                @if (currentUserClaims.ContainsKey("Blogs/Add"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Create", "Blogs")">
+                            --> Blogs Add
+                        </a>
+                    </li>
+                }
+
                 <li class="nav-item">
                     <a class="nav-link active disabled" href="#">Roles</a>
                 </li>
@@ -97,7 +120,7 @@
                 <br />
                 Your Roles: <br />
                 <ul>
-                    @foreach (var rolename in currentUserRoles)
+                    @foreach (var rolename in currentUserRoles.OrderBy(x=>x))
                     {
                         <li>@rolename</li>
                     }
@@ -106,7 +129,7 @@
                 Your Claims: <br />
 
                 <ul>
-                    @foreach (var claimname in currentUserClaims.Keys)
+                    @foreach (var claimname in currentUserClaims.Keys.OrderBy(x=>x))
                     {
                         <li>@claimname</li>
                     }
