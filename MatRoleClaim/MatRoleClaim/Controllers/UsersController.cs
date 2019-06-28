@@ -4,11 +4,14 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using MatRoleClaim.Attributes;
 using MatRoleClaim.Models;
 using MatRoleClaim.Models.IdentityModels;
+using MatRoleClaim.Models.ViewModels;
+using Microsoft.AspNet.Identity;
 
 namespace MatRoleClaim.Controllers
 {
@@ -50,22 +53,29 @@ namespace MatRoleClaim.Controllers
         [RoleClaimsAuthorize("Users", "Add")]
         public ActionResult Create()
         {
+            ViewBag.Name = new SelectList(DbContext.Roles.ToList(), "Name", "Name");
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [RoleClaimsAuthorize("Users", "Add")]
-        public ActionResult Create([Bind(Include = "Id,Email,EmailConfirmed,PasswordHash,SecurityStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEndDateUtc,LockoutEnabled,AccessFailedCount,UserName")] ApplicationUser applicationUser)
+        public async Task<ActionResult> Create([Bind(Include = "UserRoles,Email,Password,ConfirmPassword")] RegisterViewModel registerViewModel)
         {
             if (ModelState.IsValid)
             {
-                DbContext.Users.Add(applicationUser);
-                DbContext.SaveChanges();
-                return RedirectToAction("Index");
+                var user = new ApplicationUser { UserName = registerViewModel.Email, Email = registerViewModel.Email };
+                var result = await UserManager.CreateAsync(user, registerViewModel.Password);
+                if (result.Succeeded)
+                {
+                    await UserManager.AddToRoleAsync(user.Id, registerViewModel.UserRoles);
+                    return RedirectToAction("Index");
+                }
+                AddErrors(result);
             }
 
-            return View(applicationUser);
+            ViewBag.Name = new SelectList(DbContext.Roles.ToList(), "Name", "Name");
+            return View(registerViewModel);
         }
 
         [RoleClaimsAuthorize("Users", "Edit")]
@@ -80,21 +90,34 @@ namespace MatRoleClaim.Controllers
             {
                 return HttpNotFound();
             }
-            return View(applicationUser);
+
+            ApplicationUserViewModel applicationUserViewModel = new ApplicationUserViewModel { Id = applicationUser.Id, Email = applicationUser.Email, NewPassword = "" };
+            return View(applicationUserViewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [RoleClaimsAuthorize("Users", "Edit")]
-        public ActionResult Edit([Bind(Include = "Id,Email,EmailConfirmed,PasswordHash,SecurityStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEndDateUtc,LockoutEnabled,AccessFailedCount,UserName")] ApplicationUser applicationUser)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Email,NewPassword")] ApplicationUserViewModel applicationUserViewModel)
         {
             if (ModelState.IsValid)
             {
-                DbContext.Entry(applicationUser).State = EntityState.Modified;
-                DbContext.SaveChanges();
-                return RedirectToAction("Index");
+                ApplicationUser applicationUser = DbContext.Users.Find(applicationUserViewModel.Id);
+                if (applicationUser == null)
+                    return HttpNotFound();
+
+                IdentityResult result = null;
+                if (!String.IsNullOrEmpty(applicationUserViewModel.NewPassword))
+                {
+                    var token = await UserManager.GeneratePasswordResetTokenAsync(applicationUser.Id);
+                    result = await UserManager.ResetPasswordAsync(applicationUser.Id, token, applicationUserViewModel.NewPassword);
+                }
+
+                if (result.Succeeded)
+                    return RedirectToAction("Index");
             }
-            return View(applicationUser);
+
+            return View(applicationUserViewModel);
         }
 
         [RoleClaimsAuthorize("Users", "Delete")]
@@ -123,6 +146,14 @@ namespace MatRoleClaim.Controllers
             return RedirectToAction("Index");
         }
 
-        
+
+
+        private void AddErrors(IdentityResult result)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error);
+            }
+        }
     }
 }
