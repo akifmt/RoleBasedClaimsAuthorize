@@ -32,6 +32,7 @@ namespace MatRoleClaim
             var roleManager = new ApplicationRoleManager(new ApplicationRoleStore(context));
             var userManager = new ApplicationUserManager(new ApplicationUserStore(context));
 
+            // creating Creating SuperAdmin role, user and default blog posts
             if (!roleManager.RoleExists("SuperAdmin"))
             {
                 // create ALL Claims
@@ -54,23 +55,29 @@ namespace MatRoleClaim
                 {
                     var result1 = userManager.AddToRole(userAdmin.Id, "SuperAdmin");
                 }
+
+                Blog newPost1 = new Blog { Id = 1, Title = "Test 1", Content = "Test 1 content...", AuthorId = userAdmin.Id, PostDate = DateTime.Now };
+                Blog newPost2 = new Blog { Id = 2, Title = "Test 2", Content = "Test 2 content...", AuthorId = userAdmin.Id, PostDate = DateTime.Now };
+                context.Blogs.Add(newPost1);
+                context.Blogs.Add(newPost2);
+                context.SaveChanges();
             }
 
-            // creating Creating Manager role    
+            // creating Creating Web Admin role    
             if (!roleManager.RoleExists("Web Admin"))
             {
                 var role = new ApplicationRole { Name = "Web Admin", Description = "Web Admin role." };
                 roleManager.Create(role);
             }
 
-            // creating Creating Manager role    
+            // creating Creating Blogger role    
             if (!roleManager.RoleExists("Blogger"))
             {
                 var role = new ApplicationRole { Name = "Blogger", Description = "Blogger role. Add, edit, remove posts." };
                 roleManager.Create(role);
             }
 
-            // creating Creating Employee role    
+            // creating Creating User role    
             if (!roleManager.RoleExists("User"))
             {
                 var role = new ApplicationRole { Name = "User", Description = "User role. not have any claims" };
