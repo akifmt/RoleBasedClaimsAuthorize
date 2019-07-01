@@ -1,5 +1,5 @@
 # Role Based Claims Authorize .Net MVC 5 - Identity 2.2
-## Just Another Blog
+## Just Another Blog (with User Roles and Permissions)
 ### with ASP.NET Mvc 5
 
 - **How to**
@@ -14,6 +14,7 @@
 	- ASP.NET Identity 2.2.2
 
 - **Details**
+	- Claims used for permissions on this project.
 	- An user have many roles
 	- A role have many claims
 	- Users access pages with "Role Claims"
