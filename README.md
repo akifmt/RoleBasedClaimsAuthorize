@@ -23,12 +23,16 @@
 	- Admin can "Show, Edit Role Claims"
 	- New user can register any roles except admin role
 
+- **DB**
 ![DB](/images/0DBDiagram.png)
 
+- **AdminPanel**
 ![AdminPanel](/images/1AdminPanel.png)
 
+- **RoleClaims**
 ![RoleClaims](/images/2RoleClaims.png)
 
+- **UserRoles**
 ![UserRoles](/images/3UserRoles.png)
 
 - **TODO**
