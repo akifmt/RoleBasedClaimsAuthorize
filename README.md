@@ -23,4 +23,14 @@
 	- Admin can "Show, Edit Role Claims"
 	- New user can register any roles except admin role
 
-![blog](/images/images01.png)
+![DB](/images/0DBDiagram.png)
+
+![AdminPanel](/images/1AdminPanel.png)
+
+![RoleClaims](/images/2RoleClaims.png)
+
+![UserRoles](/images/3UserRoles.png)
+
+- **TODO**
+	- Custom Error Pages
+	- User Panel
