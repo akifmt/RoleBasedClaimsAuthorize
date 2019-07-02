@@ -1,14 +1,10 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using MatRoleClaim.Models;
 using MatRoleClaim.Models.ViewModels;
 using MatRoleClaim.Models.IdentityModels;
 
@@ -16,17 +12,6 @@ namespace MatRoleClaim.Controllers
 {
     public class AccountController : BaseController
     {
-        public AccountController()
-        {
-        }
-
-        public AccountController(ApplicationUserManager userManager, ApplicationRoleManager roleManager, ApplicationSignInManager signInManager)
-        {
-            base.UserManager = userManager;
-            base.SignInManager = signInManager;
-            base.RoleManager = roleManager;
-        }
-
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
@@ -65,7 +50,7 @@ namespace MatRoleClaim.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            ViewBag.Name = new SelectList(DbContext.Roles.Where(u => !u.Name.Contains("Admin"))
+            ViewBag.Name = new SelectList(RoleManager.Roles.Where(u => !u.Name.Contains("Admin"))
                                             .ToList(), "Name", "Name");
             return View();
         }
@@ -93,12 +78,11 @@ namespace MatRoleClaim.Controllers
 
                     return RedirectToAction("Index", "Home");
                 }
-                ViewBag.Name = new SelectList(DbContext.Roles.Where(u => !u.Name.Contains("Admin"))
+                ViewBag.Name = new SelectList(RoleManager.Roles.Where(u => !u.Name.Contains("Admin"))
                                           .ToList(), "Name", "Name");
                 AddErrors(result);
             }
 
-            // If we got this far, something failed, redisplay form
             return View(model);
         }
 

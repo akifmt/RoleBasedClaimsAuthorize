@@ -10,6 +10,7 @@ using MatRoleClaim.Models;
 
 namespace MatRoleClaim.Controllers
 {
+    [Authorize]
     public class BlogsController : BaseController
     {
         public ActionResult Index()

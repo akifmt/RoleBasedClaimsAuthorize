@@ -14,17 +14,6 @@ namespace MatRoleClaim.Controllers
     [Authorize]
     public class ManageController : BaseController
     {
-        public ManageController()
-        {
-        }
-
-        public ManageController(ApplicationUserManager userManager, ApplicationRoleManager roleManager, ApplicationSignInManager signInManager)
-        {
-            base.UserManager = userManager;
-            base.SignInManager = signInManager;
-            base.RoleManager = RoleManager;
-        }
-
         public ActionResult Index(ManageMessageId? message)
         {
             ViewBag.StatusMessage =

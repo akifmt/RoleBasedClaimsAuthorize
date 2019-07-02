@@ -18,17 +18,6 @@ namespace MatRoleClaim.Controllers
     [Authorize]
     public class UsersController : BaseController
     {
-        public UsersController()
-        {
-        }
-
-        public UsersController(ApplicationUserManager userManager, ApplicationRoleManager roleManager, ApplicationSignInManager signInManager)
-        {
-            base.UserManager = userManager;
-            base.RoleManager = roleManager;
-            base.SignInManager = signInManager;
-        }
-
         [RoleClaimsAuthorize("Users", "Show")]
         public ActionResult Index()
         {

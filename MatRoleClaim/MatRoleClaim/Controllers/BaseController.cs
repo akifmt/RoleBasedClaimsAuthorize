@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using MatRoleClaim.Attributes;
 using MatRoleClaim.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
@@ -27,15 +26,6 @@ namespace MatRoleClaim.Controllers
             }
         }
 
-        public ApplicationSignInManager SignInManager {
-            get {
-                return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-            }
-            set {
-                _signInManager = value;
-            }
-        }
-
         public ApplicationUserManager UserManager {
             get {
                 return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
@@ -54,10 +44,31 @@ namespace MatRoleClaim.Controllers
             }
         }
 
+        public ApplicationSignInManager SignInManager {
+            get {
+                return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
+            }
+            set {
+                _signInManager = value;
+            }
+        }
+
         public IAuthenticationManager AuthenticationManager {
             get {
                 return HttpContext.GetOwinContext().Authentication;
             }
+        }
+
+        public BaseController()
+        {
+        }
+
+        public BaseController(ApplicationDbContext dbContext, ApplicationUserManager userManager, ApplicationRoleManager roleManager, ApplicationSignInManager signInManager)
+        {
+            DbContext = dbContext;
+            UserManager = userManager;
+            RoleManager = roleManager;
+            SignInManager = signInManager;
         }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
@@ -71,7 +82,6 @@ namespace MatRoleClaim.Controllers
 
         /// <summary>
         /// Set user claims to ViewBag.CurrentUserClaims
-        /// (if admin user add "SuperAdmin" to claims)
         /// </summary>
         public void SetUsertoViewBag()
         {
@@ -101,7 +111,6 @@ namespace MatRoleClaim.Controllers
             ViewBag.CurrentUserClaims = currentUserClaims;
             ViewBag.CurrentUserRoles = currentUserRoles;
         }
-
 
 
         protected override void Dispose(bool disposing)

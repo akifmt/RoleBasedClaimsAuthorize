@@ -22,6 +22,11 @@ namespace MatRoleClaim.Attributes
 
         private string claimType;
         private string claimValue;
+        /// <summary>
+        /// Check claim type and value on current user
+        /// </summary>
+        /// <param name="claimType">Name of claim</param>
+        /// <param name="claimValue">Value of claim</param>
         public RoleClaimsAuthorizeAttribute(string claimType, string claimValue)
         {
             this.claimType = claimType;

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
+using System.Data.Entity;
 
 namespace MatRoleClaim.Controllers
 {
@@ -17,7 +14,7 @@ namespace MatRoleClaim.Controllers
         {
             ViewBag.Message = "Your blog page.";
 
-            return View(DbContext.Blogs.Include("Author"));
+            return View(DbContext.Blogs.Include(x => x.Author));
         }
 
         public ActionResult About()

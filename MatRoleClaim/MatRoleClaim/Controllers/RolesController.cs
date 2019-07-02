@@ -17,22 +17,10 @@ namespace MatRoleClaim.Controllers
     [Authorize]
     public class RolesController : BaseController
     {
-        public RolesController()
-        {
-        }
-
-        public RolesController(ApplicationUserManager userManager, ApplicationRoleManager roleManager, ApplicationSignInManager signInManager)
-        {
-            base.UserManager = userManager;
-            base.RoleManager = roleManager;
-            base.SignInManager = signInManager;
-        }
-
         [RoleClaimsAuthorize("Roles", "Show")]
         public ActionResult Index()
         {
-            List<ApplicationRole> Roles = base.RoleManager.Roles.ToList();
-            return View(Roles);
+            return View(base.RoleManager.Roles.ToList());
         }
 
         [RoleClaimsAuthorize("Roles", "Show")]
@@ -41,7 +29,7 @@ namespace MatRoleClaim.Controllers
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            ApplicationRole role = DbContext.Roles.Find(id);
+            ApplicationRole role = RoleManager.FindById(id);
             if (role == null)
                 return HttpNotFound();
 
@@ -51,17 +39,24 @@ namespace MatRoleClaim.Controllers
         [RoleClaimsAuthorize("Roles", "Add")]
         public ActionResult Create()
         {
-            var Role = new ApplicationRole();
-            return View(Role);
+            return View();
         }
 
         [HttpPost]
         [RoleClaimsAuthorize("Roles", "Add")]
-        public ActionResult Create(ApplicationRole Role)
+        public ActionResult Create(ApplicationRole role)
         {
-            base.DbContext.Roles.Add(Role);
-            base.DbContext.SaveChanges();
-            return RedirectToAction("Index");
+            if (ModelState.IsValid)
+            {
+                var result = RoleManager.Create(role);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Index");
+                }
+                AddErrors(result);
+            }
+
+            return View(role);
         }
 
         [RoleClaimsAuthorize("Roles", "Edit")]
@@ -70,7 +65,7 @@ namespace MatRoleClaim.Controllers
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            ApplicationRole role = RoleManager.Roles.Where(x=>x.Id == id).FirstOrDefault();
+            ApplicationRole role = RoleManager.FindById(id);
             if (role == null)
                 return HttpNotFound();
 
@@ -84,9 +79,12 @@ namespace MatRoleClaim.Controllers
         {
             if (ModelState.IsValid)
             {
-                DbContext.Entry(role).State = EntityState.Modified;
-                DbContext.SaveChanges();
-                return RedirectToAction("Index");
+                var result = RoleManager.Update(role);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Index");
+                }
+                AddErrors(result);
             }
             return View(role);
         }
@@ -97,7 +95,7 @@ namespace MatRoleClaim.Controllers
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            ApplicationRole role = DbContext.Roles.Find(id);
+            ApplicationRole role = RoleManager.FindById(id);
             if (role == null)
                 return HttpNotFound();
 
@@ -109,10 +107,27 @@ namespace MatRoleClaim.Controllers
         [RoleClaimsAuthorize("Roles", "Delete")]
         public ActionResult DeleteConfirmed(string id)
         {
-            ApplicationRole role = DbContext.Roles.Find(id);
-            DbContext.Roles.Remove(role);
-            DbContext.SaveChanges();
+            ApplicationRole role = RoleManager.FindById(id);
+            if (role == null)
+                return HttpNotFound();
+
+            var result = RoleManager.Delete(role);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Index");
+            }
+            AddErrors(result);
+
             return RedirectToAction("Index");
+        }
+
+        // Helpers
+        private void AddErrors(IdentityResult result)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error);
+            }
         }
 
     }

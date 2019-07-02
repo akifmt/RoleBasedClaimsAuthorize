@@ -91,7 +91,6 @@ namespace MatRoleClaim.Controllers
 
 
         // Helpers
-
         private RoleClaimsViewModel GetRoleClaimsViewModel(ApplicationRole applicationRole)
         {
             RoleClaimsViewModel roleWithAllClaims = new RoleClaimsViewModel
